@@ -45,11 +45,46 @@ concept has_interfaces = requires(T t) {
   { CustomTypeInterfaces<T>::interfaces };
 };
 
+// A type trait to extract the return type from a function pointer
+template <typename T> struct function_traits;
+
+// Specialization for function pointers
+template <typename Ret, typename... Args>
+struct function_traits<Ret (*)(Args...)> {
+  using return_type = Ret;
+  using args = std::tuple<Args...>;
+};
+template <typename Ret, typename T, typename... Args>
+struct function_traits<Ret (T::*)(Args...)> {
+  using return_type = Ret;
+  using args = std::tuple<Args...>;
+};
+
 template <typename... Args> auto extractTypes() {
-  return std::array<Il2CppType const*, sizeof...(Args)>({::il2cpp_utils::ExtractIndependentType<Args>()...});
+  return std::array<Il2CppType const *, sizeof...(Args)>(
+      {::il2cpp_utils::ExtractIndependentType<Args>()...});
 }
 template <typename... Args> auto extractClasses() {
-  return std::array<Il2CppClass const*, sizeof...(Args)>({(::il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<Args*>::get())...});
+  return std::array<Il2CppClass const *, sizeof...(Args)>(
+      {(::il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<
+          Args *>::get())...});
+}
+
+// Variadic helper function to extract types from a function pointer
+template <typename Func, std::size_t... I>
+auto extractTypesImplFn(std::index_sequence<I...>) {
+  using traits = function_traits<Func>;
+  return std::array<Il2CppType const *, sizeof...(I)>{
+      il2cpp_utils::ExtractIndependentType<
+          std::tuple_element_t<I, typename traits::args>>()...};
+}
+
+// Main function to extract types from a function pointer
+template <typename Func> auto extractTypesFn() {
+  using traits = function_traits<Func>;
+  return extractTypesImplFn<Func>(
+      std::make_index_sequence<
+          std::tuple_size<typename traits::args>::value>{});
 }
 
 struct CTField {
@@ -69,7 +104,7 @@ struct CustomTypeMetadata {
   std::string_view namespaze;
   std::string_view name;
   Il2CppClass const *parent;
-  std::vector<Il2CppClass const*> interfaces;
+  std::vector<Il2CppClass const *> interfaces;
 
   std::vector<CTField> fields;
   std::vector<CTMethod> methods;
@@ -77,15 +112,6 @@ struct CustomTypeMetadata {
   CustomTypeMetadata(CustomTypeMetadata &&) = delete;
   explicit CustomTypeMetadata(CustomTypeMetadata const &) = default;
   CustomTypeMetadata() = default;
-};
-
-// A type trait to extract the return type from a function pointer
-template <typename T> struct function_traits;
-
-// Specialization for function pointers
-template <typename Ret, typename... Args>
-struct function_traits<Ret (*)(Args...)> {
-  using return_type = Ret;
 };
 
 struct Register {
@@ -106,7 +132,7 @@ struct Register {
     data.namespaze = CTData::namespaze;
     data.name = CTData::name;
     if constexpr (has_interfaces<Ty>) {
-      auto const &interfaces = ::Merge::CustomTypeInterfaces<Ty>::interfaces();
+      auto interfaces = ::Merge::CustomTypeInterfaces<Ty>::interfaces();
       data.interfaces = std::vector<Il2CppClass const *>(interfaces.begin(),
                                                          interfaces.end());
     }
@@ -124,7 +150,7 @@ struct Register {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTFieldData = ::Merge::CustomTypeFieldInfo<Ty, Field>;
 
-    auto& data = registerType<Ty>();
+    auto &data = registerType<Ty>();
 
     CTField field;
     field.name = CTFieldData::name;
@@ -141,17 +167,19 @@ struct Register {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTMethodData = ::Merge::CustomTypeMethodInfo<Ty, Method>;
 
-    auto& data = registerType<Ty>();
+    auto &data = registerType<Ty>();
 
     CTMethod method;
     method.name = CTMethodData::name;
     // TODO: Addr
-    // method.addr = reinterpret_cast<std::size_t>(reinterpret_cast<void*>(CTMethodData::addr));
-    // TODO: Ret
-    // method.ret_ty = ::il2cpp_utils::ExtractIndependentType<
-    //     typename function_traits<decltype(Method)>::return_type>();
+    // method.addr =
+    // reinterpret_cast<std::size_t>(reinterpret_cast<void*>(CTMethodData::addr));
 
-    // TODO: Params
+    method.ret_ty = ::il2cpp_utils::ExtractIndependentType<
+        typename function_traits<decltype(Method)>::return_type>();
+
+    auto paramArray = extractTypesFn<typename CTMethodData::FnType>();
+    method.parameters = std::vector(paramArray.begin(), paramArray.end());
 
     data.methods.emplace_back(method);
 
