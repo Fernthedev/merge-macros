@@ -71,33 +71,15 @@
         "id": "bs-cordl",
         "versionRange": "^3701.0.0",
         "additionalData": {}
+      },
+      {
+        "id": "merge",
+        "versionRange": "^0.0.0",
+        "additionalData": {}
       }
     ]
   },
   "restoredDependencies": [
-    {
-      "dependency": {
-        "id": "bs-cordl",
-        "versionRange": "=3701.0.0",
-        "additionalData": {
-          "headersOnly": true,
-          "branchName": "version/v3701_0_0",
-          "compileOptions": {
-            "includePaths": [
-              "include"
-            ],
-            "cppFeatures": [],
-            "cppFlags": [
-              "-DNEED_UNSAFE_CSHARP",
-              "-fdeclspec",
-              "-DUNITY_2021",
-              "-DHAS_CODEGEN"
-            ]
-          }
-        }
-      },
-      "version": "3701.0.0"
-    },
     {
       "dependency": {
         "id": "paper",
@@ -131,6 +113,29 @@
     },
     {
       "dependency": {
+        "id": "bs-cordl",
+        "versionRange": "=3701.0.0",
+        "additionalData": {
+          "headersOnly": true,
+          "branchName": "version/v3701_0_0",
+          "compileOptions": {
+            "includePaths": [
+              "include"
+            ],
+            "cppFeatures": [],
+            "cppFlags": [
+              "-DNEED_UNSAFE_CSHARP",
+              "-fdeclspec",
+              "-DUNITY_2021",
+              "-DHAS_CODEGEN"
+            ]
+          }
+        }
+      },
+      "version": "3701.0.0"
+    },
+    {
+      "dependency": {
         "id": "beatsaber-hook",
         "versionRange": "=5.1.9",
         "additionalData": {
@@ -141,6 +146,16 @@
         }
       },
       "version": "5.1.9"
+    },
+    {
+      "dependency": {
+        "id": "merge",
+        "versionRange": "=0.0.0",
+        "additionalData": {
+          "headersOnly": true
+        }
+      },
+      "version": "0.0.0"
     },
     {
       "dependency": {

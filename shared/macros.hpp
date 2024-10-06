@@ -7,7 +7,7 @@
 #include "beatsaber-hook/shared/utils/il2cpp-type-check.hpp"
 #include "beatsaber-hook/shared/utils/type-concepts.hpp"
 
-#include "register.hpp"
+#include "./register.hpp"
 
 #define DECLARE_CUSTOM_TYPE(Namespaze, Name, Ty, ParentTy)                     \
   template <> struct BS_HOOKS_HIDDEN ::Merge::CustomTypeInfo<Ty> {             \

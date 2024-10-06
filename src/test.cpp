@@ -6,6 +6,8 @@
 #include "System/String.hpp"
 #include "macros.hpp"
 
+#include "merge/shared/merge-api.h"
+
 struct Test : System::Object {
   int x;
   float Foo();
@@ -23,6 +25,6 @@ DECLARE_CUSTOM_METHOD_OVERRIDE(Test, Finalize, System::Object);
 void test() {
   auto klass = classof(Test *);
 
-      auto test = il2cpp_utils::RunMethodRethrow<float>(
-          il2cpp_utils::New<Test *>(), "Foo");
+  auto test =
+      il2cpp_utils::RunMethodRethrow<float>(il2cpp_utils::New<Test *>(), "Foo");
 }
