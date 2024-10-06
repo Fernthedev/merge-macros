@@ -21,7 +21,9 @@
   }
 #define DECLARE_CUSTOM_TYPE_INTERFACES(Ty, ...)                                \
   template <> struct BS_HOOKS_HIDDEN ::Merge::CustomTypeInterfaces<Ty> {       \
-    static auto interfaces() { return ::Merge::extractClasses<__VA_ARGS__>(); }  \
+    static auto interfaces() {                                                 \
+      return ::Merge::extractClasses<__VA_ARGS__>();                           \
+    }                                                                          \
   }
 
 #define DECLARE_CUSTOM_FIELD(Ty, Name)                                         \
@@ -51,17 +53,11 @@
 
 #define DECLARE_CUSTOM_METHOD_OVERRIDE(Ty, Name, BaseType)                     \
   template <>                                                                  \
-  struct BS_HOOKS_HIDDEN ::Merge::CustomTypeMethodInfo<Ty, &Ty::Name> {        \
-    static constexpr std::string_view name = #Name;                            \
-    static constexpr auto const addr = &Ty::Name;                              \
-    using Owner = Ty;                                                          \
-    using FnType = decltype(&Ty::Name);                                        \
+  struct BS_HOOKS_HIDDEN ::Merge::CustomTypeMethodOverrideInfo<Ty,             \
+                                                               &Ty::Name> {    \
+                                                                               \
     using BaseMethod =                                                         \
         ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&BaseType::Name>;    \
-                                                                               \
-  private:                                                                     \
-    static inline std::monostate methodData =                                  \
-        ::Merge::Register::registerMethod<Ty, &Ty::Name>();                    \
   }
 
 // no custom type requires boxing

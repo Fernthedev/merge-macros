@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <il2cpp-api-types.h>
 #include <il2cpp-class-internals.h>
+#include <il2cpp-metadata.h>
 #include <string_view>
 #include <unordered_set>
 #include <variant>
@@ -17,6 +18,7 @@ template <typename T> struct CustomTypeInterfaces;
 
 template <typename T, auto FT> struct CustomTypeFieldInfo;
 template <typename T, auto MT> struct CustomTypeMethodInfo;
+template <typename T, auto MT> struct CustomTypeMethodOverrideInfo;
 
 template <typename T>
 concept is_custom_type = requires(T t) {
@@ -34,25 +36,31 @@ concept has_interfaces = requires(T t) {
   typename CustomTypeInterfaces<T>; // Check if we can use the type
   { CustomTypeInterfaces<T>::interfaces };
 };
+template <typename T, auto MT>
+concept has_override = requires() {
+  typename CustomTypeMethodOverrideInfo<T, MT>; // Check if we can use the type
+  { CustomTypeMethodOverrideInfo<T, MT>::BaseMethod };
+};
 
 struct CTField {
-  Il2CppType const *ty;
+  TypeIndex ty;
   std::string_view name;
   std::size_t offset;
 };
 
 struct CTMethod {
-  Il2CppType const *ret_ty;
-  std::vector<Il2CppType const *> parameters;
+  TypeIndex ret_ty;
+  std::vector<TypeIndex> parameters;
   std::string_view name;
   std::size_t addr;
+  std::optional<uint16_t> vtableSlot;
 };
 
 struct CustomTypeMetadata {
   std::string_view namespaze;
   std::string_view name;
-  Il2CppClass const *parent;
-  std::vector<Il2CppClass const *> interfaces;
+  TypeIndex parent;
+  std::vector<TypeIndex> interfaces;
 
   std::vector<CTField> fields;
   std::vector<CTMethod> methods;
@@ -81,8 +89,8 @@ struct Register {
     data.name = CTData::name;
     if constexpr (has_interfaces<Ty>) {
       auto interfaces = ::Merge::CustomTypeInterfaces<Ty>::interfaces();
-      data.interfaces = std::vector<Il2CppClass const *>(interfaces.begin(),
-                                                         interfaces.end());
+      data.interfaces =
+          std::vector<TypeIndex>(interfaces.begin(), interfaces.end());
     }
 
     // register if needed
@@ -114,11 +122,18 @@ struct Register {
   template <typename Ty, auto Method> static std::monostate registerMethod() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTMethodData = ::Merge::CustomTypeMethodInfo<Ty, Method>;
+    using CTOverrideMethodData = ::Merge::CustomTypeMethodOverrideInfo<Ty, Method>;
 
     auto &data = registerType<Ty>();
 
     CTMethod method;
     method.name = CTMethodData::name;
+
+    if constexpr (has_override<Ty, Method>) {
+      MethodInfo const *methodInfo = CTOverrideMethodData::BaseMethod;
+      method.vtableSlot = methodInfo->slot;
+    }
+
     // TODO: Addr
     // method.addr =
     // reinterpret_cast<std::size_t>(reinterpret_cast<void*>(CTMethodData::addr));
