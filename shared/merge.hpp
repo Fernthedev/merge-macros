@@ -6,7 +6,7 @@
 
 namespace Merge {
 
-static void doMerge(std::string_view name) {
+static void AutoRegister(std::string_view name) {
   AssemblyIndex assembly = Merge::API::CreateAssembly(name);
   ImageIndex image =
       Merge::API::CreateImage(assembly, std::string(name) + ".dll");

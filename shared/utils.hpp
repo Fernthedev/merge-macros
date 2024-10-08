@@ -1,4 +1,6 @@
 
+#include <cstdint>
+#include <il2cpp-metadata.h>
 #include <string_view>
 
 #include "beatsaber-hook/shared/utils/il2cpp-type-check.hpp"
@@ -34,14 +36,29 @@ struct function_traits<Ret (T::*)(Args...)> {
   using args = std::tuple<Args...>;
 };
 
-template <typename... Args> auto extractTypes() {
-  return std::array<Il2CppType const *, sizeof...(Args)>(
-      {::il2cpp_utils::ExtractIndependentType<Args>()...});
+template <typename T>
+concept il2cpp_merge_type = requires(T t) {
+  { T::__IL2CPP_TYPE_INDEX } -> std::convertible_to<uint32_t>;
+};
+
+// TODO: Get type of a ByRef
+// Like ExtractType, but only returns an Il2CppType* if it can be extracted
+// without an instance of T.
+template <il2cpp_merge_type T>
+const TypeIndex ExtractIndependentType() {
+  auto const &logger = il2cpp_utils::Logger;
+
+  return T::__IL2CPP_TYPE_INDEX;
 }
-template <typename... Args> auto extractClasses() {
-  return std::array<Il2CppClass const *, sizeof...(Args)>(
-      {(::il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<
-          Args *>::get())...});
+
+
+
+inline auto ExtractTypes() { return ::std::array<const Il2CppType *, 0>(); }
+
+template <typename... TArgs> auto ExtractTypes() {
+  constexpr std::size_t array_count = sizeof...(TArgs);
+
+  return std::array<TypeIndex, array_count>({ExtractIndependentType<TArgs>()...});
 }
 
 // Variadic helper function to extract types from a function pointer
@@ -49,8 +66,7 @@ template <typename Func, std::size_t... I>
 auto extractTypesImplFn(std::index_sequence<I...>) {
   using traits = function_traits<Func>;
   return std::array<Il2CppType const *, sizeof...(I)>{
-      il2cpp_utils::ExtractIndependentType<
-          std::tuple_element_t<I, typename traits::args>>()...};
+      ExtractType<std::tuple_element_t<I, typename traits::args>>()...};
 }
 
 // Main function to extract types from a function pointer

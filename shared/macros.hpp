@@ -21,9 +21,7 @@
   }
 #define DECLARE_CUSTOM_TYPE_INTERFACES(Ty, ...)                                \
   template <> struct BS_HOOKS_HIDDEN ::Merge::CustomTypeInterfaces<Ty> {       \
-    static auto interfaces() {                                                 \
-      return ::Merge::extractClasses<__VA_ARGS__>();                           \
-    }                                                                          \
+    static auto interfaces() { return ::Merge::ExtractTypes<__VA_ARGS__>(); }  \
   }
 
 #define DECLARE_CUSTOM_FIELD(Ty, Name)                                         \

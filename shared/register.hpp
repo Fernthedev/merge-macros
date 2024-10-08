@@ -97,7 +97,7 @@ struct Register {
     if constexpr (is_custom_type<typename CTData::Parent>) {
       registerType<typename CTData::Parent>();
     }
-    data.parent = classof(typename CTData::Parent *);
+    data.parent = ::Merge::ExtractIndependentType<CTData::Parent>();
 
     return types.emplace(pair, data).first->second;
   }
@@ -112,7 +112,7 @@ struct Register {
     field.name = CTFieldData::name;
     field.offset = CTFieldData::offset;
     field.ty =
-        ::il2cpp_utils::ExtractIndependentType<typename CTFieldData::Type>();
+        ::Merge::ExtractIndependentType<typename CTFieldData::Type>();
 
     data.fields.emplace_back(field);
 
@@ -130,7 +130,7 @@ struct Register {
     method.name = CTMethodData::name;
 
     if constexpr (has_override<Ty, Method>) {
-      MethodInfo const *methodInfo = CTOverrideMethodData::BaseMethod;
+      MethodInfo const *methodInfo = CTOverrideMethodData::BaseMethod::methodInfo();
       method.vtableSlot = methodInfo->slot;
     }
 
@@ -138,7 +138,7 @@ struct Register {
     // method.addr =
     // reinterpret_cast<std::size_t>(reinterpret_cast<void*>(CTMethodData::addr));
 
-    method.ret_ty = ::il2cpp_utils::ExtractIndependentType<
+    method.ret_ty = ::Merge::ExtractIndependentType<
         typename function_traits<decltype(Method)>::return_type>();
 
     auto paramArray = extractTypesFn<typename CTMethodData::FnType>();
