@@ -18,8 +18,8 @@
     using Parent = ParentTy;                                                   \
                                                                                \
   private:                                                                     \
-    static inline ::Merge::CustomTypeMetadata const &data =                    \
-        ::Merge::Register::registerType<Ty>();                                 \
+    static inline ::Merge::TypeTemplate const &data =                          \
+        ::Merge::Registry::registerType<Ty>();                                 \
   }
 #define DECLARE_CUSTOM_TYPE_INTERFACES(Ty, ...)                                \
   template <> struct BS_HOOKS_HIDDEN ::Merge::CustomTypeInterfaces<Ty> {       \
@@ -36,7 +36,7 @@
                                                                                \
   private:                                                                     \
     static inline std::monostate fieldData =                                   \
-        ::Merge::Register::registerField<Ty, &Ty::Name>();                     \
+        ::Merge::Registry::registerField<Ty, &Ty::Name>();                     \
   }
 #define DECLARE_CUSTOM_METHOD(Ty, Name)                                        \
   template <>                                                                  \
@@ -48,7 +48,7 @@
                                                                                \
   private:                                                                     \
     static inline std::monostate methodData =                                  \
-        ::Merge::Register::registerMethod<Ty, &Ty::Name>();                    \
+        ::Merge::Registry::registerMethod<Ty, &Ty::Name>();                    \
   }
 
 #define DECLARE_CUSTOM_METHOD_OVERRIDE(Ty, Name, BaseType)                     \

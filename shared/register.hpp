@@ -44,13 +44,13 @@ concept has_override = requires() {
   { CustomTypeMethodOverrideInfo<T, MT>::BaseMethod };
 };
 
-struct CTField {
+struct FieldTemplate {
   TypeIndex ty;
   std::string_view name;
   std::size_t offset;
 };
 
-struct CTMethod {
+struct MethodTemplate {
   TypeIndex ret_ty;
   std::vector<TypeIndex> parameters;
   std::string_view name;
@@ -58,25 +58,25 @@ struct CTMethod {
   std::optional<uint16_t> vtableSlot;
 };
 
-struct CustomTypeMetadata {
+struct TypeTemplate {
   std::string_view namespaze;
   std::string_view name;
   TypeIndex parent;
   std::vector<TypeIndex> interfaces;
 
-  std::vector<CTField> fields;
-  std::vector<CTMethod> methods;
+  std::vector<FieldTemplate> fields;
+  std::vector<MethodTemplate> methods;
 
-  CustomTypeMetadata(CustomTypeMetadata &&) = delete;
-  explicit CustomTypeMetadata(CustomTypeMetadata const &) = default;
-  CustomTypeMetadata() = default;
+  TypeTemplate(TypeTemplate &&) = delete;
+  explicit TypeTemplate(TypeTemplate const &) = default;
+  TypeTemplate() = default;
 };
 
-struct Register {
+struct Registry {
   using NameKey = std::pair<std::string_view, std::string_view>;
-  static inline std::unordered_map<NameKey, CustomTypeMetadata> types;
+  static inline std::unordered_map<NameKey, TypeTemplate> types;
 
-  template <typename Ty> static CustomTypeMetadata &registerType() {
+  template <typename Ty> static TypeTemplate &registerType() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
 
     auto pair = NameKey(CTData::namespaze, CTData::name);
@@ -86,7 +86,7 @@ struct Register {
     if (it != types.end())
       return it->second;
 
-    CustomTypeMetadata data;
+    TypeTemplate data;
     data.namespaze = CTData::namespaze;
     data.name = CTData::name;
     if constexpr (has_interfaces<Ty>) {
@@ -110,11 +110,10 @@ struct Register {
 
     auto &data = registerType<Ty>();
 
-    CTField field;
+    FieldTemplate field;
     field.name = CTFieldData::name;
     field.offset = CTFieldData::offset;
-    field.ty =
-        ::Merge::ExtractIndependentType<typename CTFieldData::Type>();
+    field.ty = ::Merge::ExtractIndependentType<typename CTFieldData::Type>();
 
     data.fields.emplace_back(field);
 
@@ -124,15 +123,17 @@ struct Register {
   template <typename Ty, auto Method> static std::monostate registerMethod() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTMethodData = ::Merge::CustomTypeMethodInfo<Ty, Method>;
-    using CTOverrideMethodData = ::Merge::CustomTypeMethodOverrideInfo<Ty, Method>;
+    using CTOverrideMethodData =
+        ::Merge::CustomTypeMethodOverrideInfo<Ty, Method>;
 
     auto &data = registerType<Ty>();
 
-    CTMethod method;
+    MethodTemplate method;
     method.name = CTMethodData::name;
 
     if constexpr (has_override<Ty, Method>) {
-      MethodInfo const *methodInfo = CTOverrideMethodData::BaseMethod::methodInfo();
+      MethodInfo const *methodInfo =
+          CTOverrideMethodData::BaseMethod::methodInfo();
       method.vtableSlot = methodInfo->slot;
     }
 

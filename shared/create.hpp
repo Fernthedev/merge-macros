@@ -19,7 +19,26 @@ Merge::API::MergeFieldDefinition createFieldFromMetadata(FieldTemplate f) {
   return fieldDef;
 }
 
+Merge::API::MergeMethodDefinition createMethodFromMetadata(MethodTemplate m) {
+  Merge::API::MergeMethodDefinition methodDef;
+  std::vector<Merge::API::MergeParameterDefinition> params;
+  params.reserve(m.parameters.size());
 
+  for (auto const &p : m.parameters) {
+    Merge::API::MergeParameterDefinition paramDef;
+    paramDef.type = p;
+    paramDef.name = "PARAM";
+    paramDef.attrs = 0;
+  }
+
+  methodDef.name = m.name;
+  methodDef.parameters = params;
+  methodDef.returnType = m.ret_ty;
+  methodDef.flags = 0;
+  methodDef.methodPointer = nullptr;
+
+  return methodDef;
+}
 
 void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
   Merge::API::MergeTypeDefinition poggersDef;
@@ -34,8 +53,8 @@ void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
   poggersDef.valueType = false;
 
   std::vector<Merge::API::MergeFieldDefinition> fields;
-  fields.reserve(t.fields.size());
   std::vector<Merge::API::MergeMethodDefinition> methods;
+  fields.reserve(t.fields.size());
   methods.reserve(t.methods.size());
 
   for (auto const &f : t.fields) {
@@ -43,7 +62,6 @@ void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
 
     fields.emplace_back(fieldDef);
   }
-
   for (auto const &m : t.methods) {
     Merge::API::MergeMethodDefinition methodDef = createMethodFromMetadata(m);
 
@@ -58,7 +76,7 @@ void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
   Merge::API::CreateProperties(image, tyIdx, {});
 }
 
-void AutoRegister(std::string_view name) {
+void AutoBuild(std::string_view name) {
   AssemblyIndex assembly = Merge::API::CreateAssembly(name);
   ImageIndex image =
       Merge::API::CreateImage(assembly, std::string(name) + ".dll");
