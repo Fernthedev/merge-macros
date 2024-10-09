@@ -51,7 +51,7 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^5.0.0",
+      "versionRange": "^6.0.0",
       "additionalData": {}
     },
     {
@@ -68,7 +68,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "^3701.0.0",
+      "versionRange": "^3800.0.0",
       "additionalData": {}
     },
     {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <il2cpp-api-types.h>
 #include <il2cpp-class-internals.h>

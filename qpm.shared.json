@@ -52,7 +52,7 @@
     "dependencies": [
       {
         "id": "beatsaber-hook",
-        "versionRange": "^5.0.0",
+        "versionRange": "^6.0.0",
         "additionalData": {}
       },
       {
@@ -69,7 +69,7 @@
       },
       {
         "id": "bs-cordl",
-        "versionRange": "^3701.0.0",
+        "versionRange": "^3800.0.0",
         "additionalData": {}
       },
       {
@@ -103,21 +103,26 @@
     {
       "dependency": {
         "id": "libil2cpp",
-        "versionRange": "=0.3.2",
+        "versionRange": "=0.4.0",
         "additionalData": {
           "headersOnly": true,
-          "cmake": false
+          "compileOptions": {
+            "systemIncludes": [
+              "il2cpp/external/baselib/Include",
+              "il2cpp/external/baselib/Platforms/Android/Include"
+            ]
+          }
         }
       },
-      "version": "0.3.2"
+      "version": "0.4.0"
     },
     {
       "dependency": {
         "id": "bs-cordl",
-        "versionRange": "=3701.0.0",
+        "versionRange": "=3800.0.0",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v3701_0_0",
+          "branchName": "version/v3800_0_0",
           "compileOptions": {
             "includePaths": [
               "include"
@@ -127,32 +132,35 @@
               "-DNEED_UNSAFE_CSHARP",
               "-fdeclspec",
               "-DUNITY_2021",
-              "-DHAS_CODEGEN"
+              "-DHAS_CODEGEN",
+              "-Wno-invalid-offsetof"
             ]
           }
         }
       },
-      "version": "3701.0.0"
+      "version": "3800.0.0"
     },
     {
       "dependency": {
         "id": "beatsaber-hook",
-        "versionRange": "=5.1.9",
+        "versionRange": "=6.0.0",
         "additionalData": {
-          "soLink": "https://github.com/QuestPackageManager/beatsaber-hook/releases/download/v5.1.9/libbeatsaber-hook_5_1_9.so",
-          "debugSoLink": "https://github.com/QuestPackageManager/beatsaber-hook/releases/download/v5.1.9/debug_libbeatsaber-hook_5_1_9.so",
-          "branchName": "version/v5_1_9",
+          "soLink": "https://github.com/QuestPackageManager/beatsaber-hook/releases/download/v6.0.0/libbeatsaber-hook_6_0_0.so",
+          "debugSoLink": "https://github.com/QuestPackageManager/beatsaber-hook/releases/download/v6.0.0/debug_libbeatsaber-hook_6_0_0.so",
+          "branchName": "version/v6_0_0",
           "cmake": true
         }
       },
-      "version": "5.1.9"
+      "version": "6.0.0"
     },
     {
       "dependency": {
         "id": "merge",
         "versionRange": "=0.0.0",
         "additionalData": {
-          "headersOnly": true
+          "headersOnly": true,
+          "overrideSoName": "libmerge.so",
+          "cmake": true
         }
       },
       "version": "0.0.0"

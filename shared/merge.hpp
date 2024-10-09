@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./register.hpp"
 #include "merge/shared/merge-api.h"
 

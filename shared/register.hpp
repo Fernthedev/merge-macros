@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <il2cpp-api-types.h>
 #include <il2cpp-class-internals.h>
@@ -97,7 +99,7 @@ struct Register {
     if constexpr (is_custom_type<typename CTData::Parent>) {
       registerType<typename CTData::Parent>();
     }
-    data.parent = ::Merge::ExtractIndependentType<CTData::Parent>();
+    data.parent = ::Merge::ExtractIndependentType<typename CTData::Parent>();
 
     return types.emplace(pair, data).first->second;
   }
@@ -141,7 +143,7 @@ struct Register {
     method.ret_ty = ::Merge::ExtractIndependentType<
         typename function_traits<decltype(Method)>::return_type>();
 
-    auto paramArray = extractTypesFn<typename CTMethodData::FnType>();
+    auto paramArray = extractTypesFnParams<typename CTMethodData::FnType>();
     method.parameters = std::vector(paramArray.begin(), paramArray.end());
 
     data.methods.emplace_back(method);
