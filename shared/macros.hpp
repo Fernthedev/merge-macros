@@ -18,6 +18,7 @@
     using Parent = ParentTy;                                                   \
                                                                                \
   private:                                                                     \
+    /* Initialize the type in static memory */                                 \
     static inline ::Merge::TypeTemplate const &data =                          \
         ::Merge::Registry::registerType<Ty>();                                 \
   }
@@ -35,6 +36,7 @@
     using Type = decltype(Ty::Name);                                           \
                                                                                \
   private:                                                                     \
+    /* Initialize the field in static memory */                                \
     static inline std::monostate fieldData =                                   \
         ::Merge::Registry::registerField<Ty, &Ty::Name>();                     \
   }
@@ -47,6 +49,7 @@
     using FnType = decltype(&Ty::Name);                                        \
                                                                                \
   private:                                                                     \
+    /* Initialize the method in static memory */                               \
     static inline std::monostate methodData =                                  \
         ::Merge::Registry::registerMethod<Ty, &Ty::Name>();                    \
   }
@@ -60,15 +63,17 @@
         ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&BaseType::Name>;    \
   }
 
+
+// add bs-hooks specializations for our custom types
+// 
 // no custom type requires boxing
-template <typename CT>
-struct BS_HOOKS_HIDDEN ::il2cpp_utils::il2cpp_type_check::need_box<
-    ::Merge::CustomTypeInfo<CT>> {
+template <Merge::is_custom_type CT>
+struct BS_HOOKS_HIDDEN ::il2cpp_utils::il2cpp_type_check::need_box<CT> {
   constexpr static bool value = false;
 };
 
-template <typename CT>
-struct BS_HOOKS_HIDDEN ::il2cpp_utils ::il2cpp_type_check ::il2cpp_no_arg_class<
+template <Merge::is_custom_type CT>
+struct BS_HOOKS_HIDDEN ::il2cpp_utils::il2cpp_type_check::il2cpp_no_arg_class<
     CT *> {
   using CTInfo = ::Merge::CustomTypeInfo<CT>;
 
