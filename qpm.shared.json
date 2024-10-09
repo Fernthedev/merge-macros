@@ -158,7 +158,6 @@
         "id": "merge",
         "versionRange": "=0.0.0",
         "additionalData": {
-          "headersOnly": true,
           "overrideSoName": "libmerge.so",
           "cmake": true
         }

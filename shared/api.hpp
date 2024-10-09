@@ -9,7 +9,7 @@
 namespace Merge {
 namespace {
 
-Merge::API::MergeFieldDefinition createFieldFromMetadata(FieldTemplate f) {
+static Merge::API::MergeFieldDefinition createFieldFromMetadata(FieldTemplate f) {
   Merge::API::MergeFieldDefinition fieldDef;
 
   fieldDef.name = f.name;
@@ -19,7 +19,7 @@ Merge::API::MergeFieldDefinition createFieldFromMetadata(FieldTemplate f) {
   return fieldDef;
 }
 
-Merge::API::MergeMethodDefinition createMethodFromMetadata(MethodTemplate m) {
+static Merge::API::MergeMethodDefinition createMethodFromMetadata(MethodTemplate m) {
   Merge::API::MergeMethodDefinition methodDef;
   std::vector<Merge::API::MergeParameterDefinition> params;
   params.reserve(m.parameters.size());
@@ -40,7 +40,7 @@ Merge::API::MergeMethodDefinition createMethodFromMetadata(MethodTemplate m) {
   return methodDef;
 }
 
-void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
+static void createTypeFromMetadata(ImageIndex image, TypeTemplate &t) {
   Merge::API::MergeTypeDefinition poggersDef;
   poggersDef.name = t.name;
   poggersDef.namespaze = t.namespaze;
@@ -76,7 +76,13 @@ void createTypeFromMetadata(ImageIndex image, TypeTemplate const &t) {
   Merge::API::CreateProperties(image, tyIdx, {});
 }
 
-void AutoBuild(std::string_view name) {
+} // namespace
+
+} // namespace Merge
+
+namespace Merge::API {
+
+static void AutoBuild(std::string_view name) {
   AssemblyIndex assembly = Merge::API::CreateAssembly(name);
   ImageIndex image =
       Merge::API::CreateImage(assembly, std::string(name) + ".dll");
@@ -85,6 +91,4 @@ void AutoBuild(std::string_view name) {
     createTypeFromMetadata(image, t);
   }
 }
-} // namespace
-
-} // namespace Merge
+} // namespace Merge::API

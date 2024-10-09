@@ -6,6 +6,7 @@
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "macros.hpp"
 
+#include "api.hpp"
 
 struct Test : System::Object {
   int x;
@@ -25,4 +26,6 @@ void test() {
 
   auto test =
       il2cpp_utils::RunMethodRethrow<float>(il2cpp_utils::New<Test *>(), "Foo");
+
+  Merge::API::AutoBuild("test");
 }

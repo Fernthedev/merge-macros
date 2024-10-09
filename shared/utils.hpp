@@ -61,21 +61,21 @@ template <typename T>
 concept merge_il2cpp_merge_specialized = requires(T t) {
   { il2cpp_metadata_type_index<T>::get() } -> std::convertible_to<TypeIndex>;
 };
-template <typename T> const TypeIndex ExtractIndependentType();
+template <typename T> static TypeIndex ExtractIndependentType();
 
 // TODO: Get type of a ByRef
 // Like ExtractType, but only returns an TypeIndex if it can be extracted
 // without an instance of T.
 template <merge_il2cpp_merge_specialized T>
-BS_HOOKS_HIDDEN TypeIndex ExtractIndependentType() {
+BS_HOOKS_HIDDEN static TypeIndex ExtractIndependentType() {
   return il2cpp_metadata_type_index<T>::get();
 }
 
-BS_HOOKS_HIDDEN auto ExtractTypes() {
+BS_HOOKS_HIDDEN static auto ExtractTypes() {
   return ::std::array<TypeIndex, 0>();
 }
 
-template <typename... TArgs> BS_HOOKS_HIDDEN auto ExtractTypes() {
+template <typename... TArgs> BS_HOOKS_HIDDEN static auto ExtractTypes() {
   constexpr std::size_t array_count = sizeof...(TArgs);
 
   return std::array<TypeIndex, array_count>(
@@ -84,20 +84,24 @@ template <typename... TArgs> BS_HOOKS_HIDDEN auto ExtractTypes() {
 
 // Variadic helper function to extract types from a function pointer
 template <typename Func, std::size_t... I>
-BS_HOOKS_HIDDEN auto extractTypesImplFnParams(std::index_sequence<I...>) {
+BS_HOOKS_HIDDEN static auto
+extractTypesImplFnParams(std::index_sequence<I...>) {
   using traits = function_traits<Func>;
   return std::array<TypeIndex, sizeof...(I)>{
       ExtractType<std::tuple_element_t<I, typename traits::args>>()...};
 }
 
 // Main function to extract types from a function pointer
-template <typename Func> BS_HOOKS_HIDDEN auto extractTypesFnParams() {
+template <typename Func> BS_HOOKS_HIDDEN static auto extractTypesFnParams() {
   using traits = function_traits<Func>;
   return extractTypesImplFnParams<Func>(
       std::make_index_sequence<
           std::tuple_size<typename traits::args>::value>{});
 }
 } // namespace Merge
+
+MERGE_PRIMITIVE_TYPE(float, "System", "Single");
+MERGE_PRIMITIVE_TYPE(double, "System", "Double");
 
 MERGE_PRIMITIVE_TYPE(int8_t, "System", "Int8");
 MERGE_PRIMITIVE_TYPE(int16_t, "System", "Int16");

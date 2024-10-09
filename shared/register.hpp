@@ -76,7 +76,9 @@ struct Registry {
   using NameKey = std::pair<std::string_view, std::string_view>;
   static inline std::unordered_map<NameKey, TypeTemplate> types;
 
-  template <typename Ty> static TypeTemplate &registerType() {
+  // register types
+  template <is_custom_type Ty>
+  static BS_HOOKS_HIDDEN TypeTemplate &registerType() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
 
     auto pair = NameKey(CTData::namespaze, CTData::name);
@@ -104,7 +106,8 @@ struct Registry {
     return types.emplace(pair, data).first->second;
   }
 
-  template <typename Ty, auto Field> static std::monostate registerField() {
+  template <typename Ty, auto Field>
+  static BS_HOOKS_HIDDEN std::monostate registerField() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTFieldData = ::Merge::CustomTypeFieldInfo<Ty, Field>;
 
@@ -120,7 +123,8 @@ struct Registry {
     return {};
   }
 
-  template <typename Ty, auto Method> static std::monostate registerMethod() {
+  template <typename Ty, auto Method>
+  static BS_HOOKS_HIDDEN std::monostate registerMethod() {
     using CTData = ::Merge::CustomTypeInfo<Ty>;
     using CTMethodData = ::Merge::CustomTypeMethodInfo<Ty, Method>;
     using CTOverrideMethodData =
